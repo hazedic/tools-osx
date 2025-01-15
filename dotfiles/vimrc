@@ -1,0 +1,228 @@
+if &compatible
+    set nocompatible
+endif
+
+" Define <Leader> and <LocalLeader>
+let g:mapleader = ';'
+let g:maplocalleader = ','
+nnoremap ; <Nop>
+xnoremap ; <Nop>
+nnoremap , <Nop>
+xnoremap , <Nop>
+
+function! s:load_source(path)
+    let path = fnamemodify(expand(a:path), ':p')
+    if filereadable(path)
+        execute 'source' path
+        return 1
+    endif
+    return 0
+endfunction
+
+" Install vim-plug if not found
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+endif
+
+" Run PlugInstall if there are missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+            \| PlugInstall --sync | source $MYVIMRC
+            \| endif
+
+call plug#begin('~/.vim/bundle')
+call s:load_source('~/.vim/vim-plugins.vim')
+call plug#end()
+
+set encoding=utf-8
+
+if $COLORTERM == 'gnome-terminal'
+    set t_Co=256
+endif
+
+if &t_Co == 256
+    colorscheme dracula
+    hi Normal ctermbg=235
+    let g:airline_theme='dracula'
+endif
+
+behave xterm " set mouse behavior as xterm
+if &term =~ 'xterm'
+    set mouse=a
+endif
+
+" Specifies you want tabs to be 4 spaces
+set tabstop=4
+" Use spaces instead of tabs
+set expandtab
+" Indent by 4 spaces when pressing <TAB>
+set softtabstop=4
+" Set cindent on to autoindent when editing c/c++ file, with 4 shift width
+set shiftwidth=4
+" Use multiple of shiftwidth when indenting with '<' and '>'
+set shiftround
+" Align the new line indent with the previous line
+set autoindent
+" Copy the previous indentation level
+set copyindent
+" Automatically inserts indentation in some cases
+set smartindent
+" Like smartindent, but stricter and more customisable
+set cindent
+" Display incomplete commands
+set showcmd
+" 2 screen lines to use for the command-line
+set cmdheight=2
+" Show line number
+set number
+" Using only 1 column (and 1 space) while possible
+set numberwidth=1
+" Always show the statusline
+set laststatus=2
+" Show the cursor position all the time
+set ruler
+" Always try to keep this many lines above and below the cursor
+set scrolloff=4
+" Don't redraw while executing macros
+set lazyredraw
+" Display as many lines as possible
+set display=lastline
+" Shortens messages to avoid 'press a key' prompt
+set shortmess=aOstT
+" Automatically reload when the file is changed
+set autoread
+" Sets how many lines of history Vim has to remember
+set history=100
+" Enable modeline
+set modeline
+" Show matching paren
+set showmatch
+" 1 second to show the matching paren (much faster)
+set matchtime=1
+" Show matching <> (html mainly) as well
+set matchpairs& matchpairs+=<:>
+" Don't display cursorline/column (it makes Vim really slow)
+set nocursorline
+set nocursorcolumn
+" Allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+" Set search/replace pattern to ignore case
+set ignorecase
+" If the search pattern contains upper case characters, override ignorecase option
+set smartcase
+" Do incremental searching
+set incsearch
+" Highlight search terms
+set hlsearch
+" Searches wrap around the end of the file
+set wrapscan
+" Turn off the auto saving of info to the .viminfo file
+set viminfo=
+" No swap files
+set noswapfile
+" Don't write any temporary files
+set nobackup
+" Only in case you don't want a backup file while editing
+set nowritebackup
+" Don't jump to the first non-whitespace on a line
+set nostartofline
+" In visual block mode, cursor can be positioned where there is no actual character
+set virtualedit=block
+" Use opened buffer instead of create new buffer
+set switchbuf=useopen
+" Hide the buffer instead of close
+set hidden
+" Don't fold by default
+set nofoldenable
+" Fold based on indent
+set foldmethod=indent
+" Deepest fold is 10 levels
+set foldnestmax=10
+" Display unprintable characters
+set list
+" Unprintable chars mapping
+set listchars=tab:▸\ ,trail:-,extends:»,precedes:«,nbsp:%
+" Don't wrap long lines
+set nowrap
+set whichwrap& whichwrap+=b,s,h,l,<,>,~,[,] " everything wraps
+"                         | | | | | | | | |
+"                         | | | | | | | | +-- "]" Insert and Replace
+"                         | | | | | | | +-- "[" Insert and Replace
+"                         | | | | | | +-- "~" Normal
+"                         | | | | | +-- <Right> Normal and Visual
+"                         | | | | +-- <Left> Normal and Visual
+"                         | | | +-- "l" Normal and Visual (not recommended)
+"                         | | +-- "h" Normal and Visual (not recommended)
+"                         | +-- <Space> Normal and Visual
+"                         +-- <BS> Normal and Visual
+" Wrap long lines at a space instead of in the middle of a word
+set linebreak
+" Character to show that a line is wrapped
+set showbreak=↳\
+" When wrapping, try to break at characters in breakat
+set breakat=\ ^I!@*-+;:,./?
+" Command-line completion operates in an enhanced mode
+set wildmenu
+set wildmode=list:longest,full
+set wildignore=*.o,*~,*.pyc
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+" Completion setting
+set completeopt=menu,longest
+" Don't complete from other buffer
+set complete=.
+" Height of popup menu
+set pumheight=20
+" Don't show possible completions that don't match the case of existing text
+set infercase
+
+" Clear current search highlight by double tapping //
+nnoremap <silent> // :<C-u>nohlsearch<CR>
+
+" :W sudo saves the file
+" (useful for handling the permission-denied error)
+command W w !sudo tee % > /dev/null
+
+" Type AA to selects whole buffer
+nnoremap AA ggVG
+
+" Create window splits easier, the default way is Ctrl-w,v and Ctrl-w,s
+" i remap this to vv and ss
+nnoremap <silent> vv <C-w>v
+nnoremap <silent> ss <C-w>s
+
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nnoremap <C-h> <C-w>h
+
+" Window simple resize navigation
+" nnoremap <S-Left> <C-w><<CR>
+" nnoremap <S-Right> <C-w>><CR>
+" nnoremap <S-Up> <C-w>-<CR>
+" nnoremap <S-Down> <C-w>+<CR>
+
+map <S-l> :bnext<CR>
+map <S-h> :bprevious<CR>
+
+map <leader>bd :Bclose<CR>:tabclose<CR>gT
+
+" Don't close window, when deleting a buffer
+" command! Bclose call <SID>BufcloseCloseIt()
+" function! <SID>BufcloseCloseIt()
+"     let l:currentBufNum = bufnr("%")
+"     let l:alternateBufNum = bufnr("#")
+"
+"     if buflisted(l:alternateBufNum)
+"         buffer #
+"     else
+"         bnext
+"     endif
+"
+"     if bufnr("%") == l:currentBufNum
+"         new
+"     endif
+"
+"     if buflisted(l:currentBufNum)
+"         execute("bdelete! ".l:currentBufNum)
+"     endif
+" endfunction
